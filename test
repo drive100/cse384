@@ -1,6 +1,9 @@
-<include stdio.h>
+#include <stdlib.h>
+#include <stdio.h>
 
-int main(int argc, char* argv[]){
 
-print("Hello");
+int main(int argc, char* argv[])
+{
+	printf("written by %s\n,",my_name);
+	return EXIT_SUCCESS;
 }

@@ -11,6 +11,7 @@ int main(int argc, char* argv[])
 	bool opt_d = false;
 	bool opt_m = false;
 	bool opt_t = false;
+	char* d_arg = NULL;
 	if (argc == 1)
 	{
 		printf("Usage: This program will replicate and monitor the");
@@ -24,6 +25,7 @@ int main(int argc, char* argv[])
 		}
 		else if (opt == 'd'){
 			opt_d = true;
+			d_arg = optarg;
 		}
 		else if (opt == 'm'){
 			opt_m = true;
@@ -45,6 +47,17 @@ int main(int argc, char* argv[])
 		printf("in other words, the copied file's name will be like \"file_20170305.... \"\n");
 
 		return EXIT_SUCCESS;
+	}
+
+	if (opt_d = true){
+
+		if (d_arg == NULL){
+			printf("You entered the -d option but did not enter a path.\n");
+			printf("The default path will be used.");
+		}
+		else if (d_arg == NULL){
+			//need to check whether or not the argument passed to -d is an actual path
+		}
 	}
 	ssize_t EVENT_SIZE = (sizeof (struct inotify_event));
 	ssize_t BUF_LEN = (1024 * (EVENT_SIZE + 16));

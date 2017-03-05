@@ -38,7 +38,7 @@ int main(int argc, char* argv[])
 		printf("This program is for backing up files\n");
 		printf("Entering -h will give you this help guide\n");
 		printf("Entering -d will enable you to pick your backup location,\n");
-		printf("Remember to enter your specific path right after!\n");
+		printf("Remember to enter your absolute path right after!\n");
 		printf("Entering -m tells the program to only copy the contents of\n");
 		printf("the file you want to be backed up and nothing else\n");
 		printf("Entering -t will add the date/time to the duplication file's file name\n");

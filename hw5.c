@@ -31,7 +31,7 @@ int main(int args, char* argv[])
 		else if (opt == 't'){
 			opt_t = true;
 		}
-		opt = getopt(argc, argv, "hdmt"); //restated because to reiterated through while loop to make sure there are not more options
+		opt = getopt(argc, argv, "hd:mt"); //restated because to reiterated through while loop to make sure there are not more options
 	}
 	
 	ssize_t EVENT_SIZE = (sizeof (struct inotify_event));

@@ -33,7 +33,17 @@ int main(int args, char* argv[])
 		}
 		opt = getopt(argc, argv, "hdmt"); //restated because to reiterated through while loop to make sure there are not more options
 	}
-	
+	if (opt_h = true){
+		printf("You entered the help option!");
+		printf("This program is for backing up files");
+		printf("Entering -h will give you this help guide");
+		printf("Entering -d will enable you to pick your backup location,");
+		printf("Remember to enter your specific path right after!");
+		printf("Entering -m tells the program to only copy the contents of");
+		printf("the file you want to be backed up and nothing else");
+		printf("Entering -t will add the date/time to the duplication file's file name");
+		printf("in other words, the copied file's name will be like \"file_20170305.... \" ");
+	}
 	ssize_t EVENT_SIZE = (sizeof (struct inotify_event));
 	ssize_t BUF_LEN = (1024 * (EVENT_SIZE + 16));
 	int fd = inotify_init();

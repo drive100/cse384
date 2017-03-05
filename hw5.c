@@ -45,7 +45,6 @@ int main(int argc, char* argv[])
 		printf("the file you want to be backed up and nothing else\n");
 		printf("Entering -t will add the date/time to the duplication file's file name\n");
 		printf("in other words, the copied file's name will be like \"file_20170305.... \"\n");
-
 		return EXIT_SUCCESS;
 	}
 
@@ -59,6 +58,13 @@ int main(int argc, char* argv[])
 			//need to check whether or not the argument passed to -d is an actual path
 		}
 	}
+	if (opt_m = true){
+		//to disable meta-data duplication aka just copy file contents
+		//pick reasonable default permissions?
+		//"this option should default to dis"
+	}
+
+
 	ssize_t EVENT_SIZE = (sizeof (struct inotify_event));
 	ssize_t BUF_LEN = (1024 * (EVENT_SIZE + 16));
 	int fd = inotify_init();

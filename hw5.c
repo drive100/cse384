@@ -3,10 +3,13 @@
 #include <unistd.h>
 #include <sys/inotify.h>
 #include <errno.h>
+#include <stdbool.h>
 
 int main(int args, char* argv[])
 {
 	bool opt_h = false;
+	bool opt_m = false;
+	bool opt_t = false;
 	if (args == 1)
 	{
 		printf("Usage: This program will replicate and monitor the");

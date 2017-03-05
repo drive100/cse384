@@ -31,7 +31,7 @@ int main(int argc, char* argv[])
 		else if (opt == 't'){
 			opt_t = true;
 		}
-		opt = getopt(argc, argv, "hdmt"); //restated because to reiterated through while loop to make sure there are not more options
+		opt = getopt(argc, argv, "hd:mt"); //restated because to reiterated through while loop to make sure there are not more options
 	}
 	if (opt_h = true){
 		printf("You entered the help option!\n");
@@ -49,10 +49,37 @@ int main(int argc, char* argv[])
 	ssize_t EVENT_SIZE = (sizeof (struct inotify_event));
 	ssize_t BUF_LEN = (1024 * (EVENT_SIZE + 16));
 	int fd = inotify_init();
-	char* path = "/etc/passwd";
-	int wd = inotify_add_watch(fd, path, IN_MODIFY | IN_ACCESS);
+	char* path //the location of the file comes into path;
+	int wd = inotify_add_watch(fd, path, IN_MODIFY | IN_DELETE);
 	int x;
 	char buffer[BUF_LEN];
 
+	while (1){
+		x = read(fd, buffer, BUF_LEN);
+		if (x < 0 || wd < 0 || fd < 0)
+		{
+			perror("inotify error");
+			return EXIT_FAILURE;
+		}
+		for (char* p = buffer; p < buffer + x;)
+		{
+			//printf("printing something \n");
+			struct inotify_event* event = (struct inotify_event*)p;
+			//if (event -> len)
+			//{
+				if (event->mask & IN_MODIFY)
+				{
+					printf("The file %s is modified\n", path);
+				}
+				if (event->mask & IN_DELETE)
+				{
+					printf("The file %s is deleted\n", path);
+					return EXIT_SUCCESS;
+				}
+			//}
+
+			p += sizeof(struct inotify_event) + event->len;
+		}
+	}
 
 }

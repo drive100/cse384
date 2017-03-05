@@ -55,7 +55,7 @@ int main(int argc, char* argv[])
 			printf("You entered the -d option but did not enter a path.\n");
 			printf("The default path will be used.");
 		}
-		else if (d_arg == NULL){
+		else if (d_arg != NULL){
 			//need to check whether or not the argument passed to -d is an actual path
 		}
 	}

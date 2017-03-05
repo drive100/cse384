@@ -56,14 +56,22 @@ int main(int argc, char* argv[])
 		}
 		else if (d_arg != NULL){
 			//need to check whether or not the argument passed to -d is an actual path
+			//if path is not a path, print out saying so and use default path
+			//if path is an acutal path, update path variable
 		}
 	}
+	
 	if (opt_m = true){
 		//to disable meta-data duplication aka just copy file contents
 		//pick reasonable default permissions?
-		//"this option should default to dis"
+		//"this option should default to disabled"
 	}
 
+	if (opt_t = true){
+		//APPEND time to file name
+		//using ISO 8601, no colons or timezone like in lab2
+		//option should default to disabled
+	}
 
 	ssize_t EVENT_SIZE = (sizeof (struct inotify_event));
 	ssize_t BUF_LEN = (1024 * (EVENT_SIZE + 16));

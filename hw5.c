@@ -9,7 +9,7 @@ int main(int args, char* argv[])
 {
 	bool opt_h = false;
 	bool opt_m = false;
-	bool opt_t = false;
+	bool option_t = false;
 	bool opt_x = false;
 	if (args == 1)
 	{
@@ -26,7 +26,7 @@ int main(int args, char* argv[])
 			opt_m = true;
 		}
 		else if (opt == 't'){
-			opt_t = true;
+			option_t = true;
 		}
 		else if (opt == 'x'){
 			opt_x = true;

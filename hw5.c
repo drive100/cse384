@@ -25,7 +25,7 @@ int main(int args, char* argv[])
 		else if (opt == 'm'){
 			opt_m = true;
 		}
-		else if (opt == 'u'){
+		else if (opt == 't'){
 			opt_t = true;
 		}
 		else if (opt == 'x'){
@@ -35,5 +35,5 @@ int main(int args, char* argv[])
 	}
 
 
-	
+
 }

@@ -5,13 +5,13 @@
 #include <errno.h>
 #include <stdbool.h>
 
-int main(int args, char* argv[])
+int main(int argc, char* argv[])
 {
 	bool opt_h = false;
 	bool opt_d = false;
 	bool opt_m = false;
 	bool opt_t = false;
-	if (args == 1)
+	if (argc == 1)
 	{
 		printf("Usage: This program will replicate and monitor the");
 		printf(" file that is passed into the program as an argument\n");
@@ -43,6 +43,8 @@ int main(int args, char* argv[])
 		printf("the file you want to be backed up and nothing else");
 		printf("Entering -t will add the date/time to the duplication file's file name");
 		printf("in other words, the copied file's name will be like \"file_20170305.... \" ");
+
+		return EXIT_SUCCESS;
 	}
 	ssize_t EVENT_SIZE = (sizeof (struct inotify_event));
 	ssize_t BUF_LEN = (1024 * (EVENT_SIZE + 16));

@@ -17,4 +17,23 @@ int main(int args, char* argv[])
 		printf(" file that is passed into the program as an argument\n");
 		return EXIT_SUCCESS;
 	}
+	int opt = getopt(argc, argv, "hmtx");//for all options h,m,t and x
+	while (opt != -1){
+		if (opt == 'h'){
+			opt_h = true;
+		}
+		else if (opt == 'm'){
+			opt_m = true;
+		}
+		else if (opt == 'u'){
+			opt_t = true;
+		}
+		else if (opt == 'x'){
+			opt_x = true;
+		}
+		opt = getopt(argc, argv, "hmtx"); //restated because to reiterated through while loop to make sure there are not more options
+	}
+
+
+	
 }

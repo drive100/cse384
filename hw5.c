@@ -24,7 +24,7 @@ int main(int argc, char* argv[])
 		printf(" file that is passed into the program as an argument\n");
 		return EXIT_SUCCESS;
 	}
-	int opt = getopt(argc, argv, "hd:mt");//for all options h,d,m and t
+	int opt = getopt(argc, argv, "hmtd:");//for all options h,d,m and t
 	while (opt != -1){
 		if (opt == 'h'){
 			opt_h = true;
@@ -39,7 +39,7 @@ int main(int argc, char* argv[])
 		else if (opt == 't'){
 			opt_t = true;
 		}
-		opt = getopt(argc, argv, "hd:mt"); //restated because to reiterated through while loop to make sure there are not more options
+		opt = getopt(argc, argv, "hmtd:"); //restated because to reiterated through while loop to make sure there are not more options
 	}
 	if (opt_h == true){
 		printf("You entered the help option!\n");
@@ -56,10 +56,10 @@ int main(int argc, char* argv[])
 
 	if (opt_d = true){
 		d_arg = optarg;
-
+		printf("99999++%s\n", optarg);
 		if (d_arg == NULL){
 			printf("You entered the -d option but did not enter a path.\n");
-			printf("The default path will be used.");
+			printf("The default path will be used.\n");
 		}
 		else if (d_arg != NULL){
 			//need to check whether or not the argument passed to -d is an actual path
@@ -67,15 +67,21 @@ int main(int argc, char* argv[])
 			//if path is an acutal path, update path variable
 			backup_path = d_arg;
 			struct stat fd;
-
-			if(stat(d_arg, &fd) == 0 && S_ISDIR(fd.st_mode))
+			if (access(backup_path, F_OK) == -1)
 			{
-				backupchanged = true;
-				printf("By default, the backup folder is changed to %s\n", backup_path);
+				printf("error: '%s' does not exist\n", backup_path);
 			}
-			else{
-				printf("The arg you gave is not a path");
+			else
+			{
+				if(stat(backup_path, &fd) == 0 && S_ISDIR(fd.st_mode))
+				{
+					backupchanged = true;
+					printf("By default, the backup folder is changed to %s\n", backup_path);
+				}
+				else{
+					printf("%s is not a folder\n", backup_path);
 				//use default path;
+				}
 			}
 
 

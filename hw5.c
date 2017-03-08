@@ -55,7 +55,7 @@ int main(int argc, char* argv[])
 	}
 
 	if (opt_d = true){
-		d_arg = argv[optarg];
+		d_arg = optarg;
 
 		if (d_arg == NULL){
 			printf("You entered the -d option but did not enter a path.\n");
@@ -68,10 +68,10 @@ int main(int argc, char* argv[])
 			backup_path = d_arg;
 			struct stat fd;
 
-			if(stat(path, &fd) == 0 && S_ISDIR(fd.st_mode))
+			if(stat(d_arg, &fd) == 0 && S_ISDIR(fd.st_mode))
 			{
-				//update path varaible
 				backupchanged = true;
+				printf("By default, the backup folder is changed to %s\n", backup_path);
 			}
 			else{
 				printf("The arg you gave is not a path");
@@ -99,7 +99,8 @@ int main(int argc, char* argv[])
 	int fd = inotify_init();
 	if (backupchanged == false)
 	{
-		backup_path = "";
+		backup_path = "~/Desktop";
+		printf("The default backup folder is %s\n", backup_path);
 	}
 	const char* path = argv[optind];//the location of the file comes into path;
 	if (access(path, F_OK) == -1)

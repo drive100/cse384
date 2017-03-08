@@ -16,6 +16,8 @@ int main(int argc, char* argv[])
 	bool opt_m = false;
 	bool opt_t = false;
 	char* d_arg = NULL;
+	bool backupchanged = false;
+	char* backup_path;
 	if (argc == 1)
 	{
 		printf("Usage: This program will replicate and monitor the");
@@ -53,6 +55,7 @@ int main(int argc, char* argv[])
 	}
 
 	if (opt_d = true){
+		d_arg = argv[optarg];
 
 		if (d_arg == NULL){
 			printf("You entered the -d option but did not enter a path.\n");
@@ -62,13 +65,13 @@ int main(int argc, char* argv[])
 			//need to check whether or not the argument passed to -d is an actual path
 			//if path is not a path, print out saying so and use default path
 			//if path is an acutal path, update path variable
-			const char* path;
-			path = d_arg;
+			backup_path = d_arg;
 			struct stat fd;
 
 			if(stat(path, &fd) == 0 && S_ISDIR(fd.st_mode))
 			{
 				//update path varaible
+				backupchanged = true;
 			}
 			else{
 				printf("The arg you gave is not a path");
@@ -94,13 +97,21 @@ int main(int argc, char* argv[])
 	ssize_t EVENT_SIZE = (sizeof (struct inotify_event));
 	ssize_t BUF_LEN = (1024 * (EVENT_SIZE + 16));
 	int fd = inotify_init();
+	if (backupchanged == false)
+	{
+		backup_path = "";
+	}
 	const char* path = argv[optind];//the location of the file comes into path;
 	if (access(path, F_OK) == -1)
 	{
-		printf("error: '%s does not exist'\n", path);
+		printf("error: '%s' does not exist\n", path);
 		return EXIT_SUCCESS;
 	}
-	if (access(path, ))
+	if (access(path, R_OK) == -1)
+	{
+		printf("error: '%s' is unreadable\n", path);
+		return EXIT_SUCCESS;
+	}
 	int wd = inotify_add_watch(fd, path, IN_MODIFY | IN_DELETE);
 	int x;
 	char buffer[BUF_LEN];
@@ -137,7 +148,7 @@ int main(int argc, char* argv[])
 
 void copy_file(const char* inpath,const char* outpath)
 {
-	const size_t data_size = 5;
+	const size_t data_size = 120;
 	char data[data_size];
 	int outft, inft, fileread = 1;
 

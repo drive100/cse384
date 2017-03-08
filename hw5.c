@@ -55,8 +55,8 @@ int main(int argc, char* argv[])
 	}
 
 	if (opt_d = true){
-		d_arg = optarg;
-		printf("99999++%s\n", optarg);
+		//d_arg = optarg;
+		printf("optarg = %s\n", d_arg);
 		if (d_arg == NULL){
 			printf("You entered the -d option but did not enter a path.\n");
 			printf("The default path will be used.\n");

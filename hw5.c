@@ -4,6 +4,7 @@
 #include <sys/inotify.h>
 #include <errno.h>
 #include <stdbool.h>
+//added something for testing
 
 void copy_file(const char* inpath, outpath);
 

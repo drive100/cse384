@@ -1,9 +1,9 @@
 
-test: test.c
-	gcc -o test test.c
+test: hw5.c
+	gcc -o hw5 hw5.c
 
 clean:
-	rm test
+	rm hw5
 
 tar: 
-	tar -cf test.tar test.c makefile
+	tar -cf hw5.tar hw5.c makefile

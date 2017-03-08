@@ -79,6 +79,12 @@ int main(int argc, char* argv[])
 	ssize_t BUF_LEN = (1024 * (EVENT_SIZE + 16));
 	int fd = inotify_init();
 	const char* path = argv[optind];//the location of the file comes into path;
+	if (access(path, F_OK) == -1)
+	{
+		printf("error: '%s does not exist'\n", path);
+		return EXIT_SUCCESS;
+	}
+	if (access(path, ))
 	int wd = inotify_add_watch(fd, path, IN_MODIFY | IN_DELETE);
 	int x;
 	char buffer[BUF_LEN];

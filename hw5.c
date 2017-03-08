@@ -5,6 +5,8 @@
 #include <errno.h>
 #include <stdbool.h>
 
+void copy_file(const char* inpath, outpath);
+
 int main(int argc, char* argv[])
 {
 	bool opt_h = false;
@@ -94,19 +96,53 @@ int main(int argc, char* argv[])
 			struct inotify_event* event = (struct inotify_event*)p;
 			//if (event -> len)
 			//{
-				if (event->mask & IN_MODIFY)
-				{
-					printf("The file %s is modified\n", path);
-				}
-				if (event->mask & IN_DELETE)
-				{
-					printf("The file %s is deleted\n", path);
-					return EXIT_SUCCESS;
-				}
+			if (event->mask & IN_MODIFY)
+			{
+				printf("The file %s is modified\n", path);
+			}
+			if (event->mask & IN_DELETE)
+			{
+				printf("The file %s is deleted\n", path);
+				return EXIT_SUCCESS;
+			}
 			//}
 
 			p += sizeof(struct inotify_event) + event->len;
 		}
 	}
 
+}
+
+void copy_file(const char* inpath, outpath)
+{
+	const size_t data_size = 5;
+	char data[data_size];
+	int outft, inft, fileread = 1;
+
+	//create a output file, and the file will be in outpath
+	if((outft = open(outpath, O_CREAT | O_APPEND | O_RDWR) == -1){
+		perror("outpath open");
+		return EXIT_FAILURE;
+	}
+	//open the input file, and the file will be in inpath
+	if(inft = (open(inpath, O_RDONLY)) == -1)
+	{
+		perror("inpath open");
+		return EXIT_FAILURE;
+	}
+	while(fileread != 0){
+		if(fileread = (read(infy, data, data_size)) == -1);
+		{
+			perror("read");
+			return EXIT_FAILURE;
+		}
+		if (write(outft, data, fileread) == -1)
+		{
+			perror("write");
+			return EXIT_FAILURE;
+		}
+		
+	}
+	close(inft);
+	close(outft);
 }

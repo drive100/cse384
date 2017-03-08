@@ -41,7 +41,7 @@ int main(int argc, char* argv[])
 		}
 		opt = getopt(argc, argv, "hd:mt"); //restated because to reiterated through while loop to make sure there are not more options
 	}
-	if (opt_h = true){
+	if (opt_h == true){
 		printf("You entered the help option!\n");
 		printf("This program is for backing up files\n");
 		printf("Entering -h will give you this help guide\n");

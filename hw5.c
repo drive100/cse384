@@ -4,8 +4,10 @@
 #include <sys/inotify.h>
 #include <errno.h>
 #include <stdbool.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 
-void copy_file(const char* inpath, outpath);
+void copy_file(const char* inpath,const char* outpath);
 
 int main(int argc, char* argv[])
 {
@@ -60,6 +62,20 @@ int main(int argc, char* argv[])
 			//need to check whether or not the argument passed to -d is an actual path
 			//if path is not a path, print out saying so and use default path
 			//if path is an acutal path, update path variable
+			const char* path;
+			path = d_arg;
+			struct stat fd;
+
+			if(stat(path, &fd) == 0 && S_ISDIR(fd.st_mode))
+			{
+				//update path varaible
+			}
+			else{
+				printf("The arg you gave is not a path");
+				//use default path;
+			}
+
+
 		}
 	}
 	
@@ -113,33 +129,34 @@ int main(int argc, char* argv[])
 
 }
 
-void copy_file(const char* inpath, outpath)
+void copy_file(const char* inpath,const char* outpath)
 {
 	const size_t data_size = 5;
 	char data[data_size];
 	int outft, inft, fileread = 1;
 
 	//create a output file, and the file will be in outpath
-	if((outft = open(outpath, O_CREAT | O_APPEND | O_RDWR) == -1){
+	if(outft = open(outpath, O_CREAT | O_APPEND | O_RDWR) == -1)
+	{
 		perror("outpath open");
-		return EXIT_FAILURE;
+		exit(EXIT_FAILURE);
 	}
 	//open the input file, and the file will be in inpath
 	if(inft = (open(inpath, O_RDONLY)) == -1)
 	{
 		perror("inpath open");
-		return EXIT_FAILURE;
+		exit(EXIT_FAILURE);
 	}
 	while(fileread != 0){
-		if(fileread = (read(infy, data, data_size)) == -1);
+		if(fileread = (read(inft, data, data_size)) == -1);
 		{
 			perror("read");
-			return EXIT_FAILURE;
+			exit(EXIT_FAILURE);
 		}
 		if (write(outft, data, fileread) == -1)
 		{
 			perror("write");
-			return EXIT_FAILURE;
+			exit(EXIT_FAILURE);
 		}
 		
 	}

@@ -6,11 +6,16 @@
 #include <stdbool.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <sys/types.h>
+#include <time.h>
 
 void copy_file(const char* inpath,const char* outpath);
 
 int main(int argc, char* argv[])
 {
+	const char* filename = argv[1];
+	
+
 	bool opt_h = false;
 	bool opt_d = false;
 	bool opt_m = false;
@@ -65,9 +70,14 @@ int main(int argc, char* argv[])
 			//need to check whether or not the argument passed to -d is an actual path
 			//if path is not a path, print out saying so and use default path
 			//if path is an acutal path, update path variable
-			backup_path = d_arg;
 			struct stat fd;
+
+			backup_path = d_arg;
+
+			if(stat(d_arg, &fd) == 0 && S_ISDIR(fd.st_mode))
+
 			if (access(backup_path, F_OK) == -1)
+
 			{
 				printf("error: '%s' does not exist\n", backup_path);
 			}
@@ -83,13 +93,11 @@ int main(int argc, char* argv[])
 				//use default path;
 				}
 			}
-
-
 		}
 	}
 	
 	if (opt_m = true){
-		//to disable meta-data duplication aka just copy file contents
+		//to disable meta-data duplication aka just copy file contents, nothing from 6b-f
 		//pick reasonable default permissions?
 		//"this option should default to disabled"
 	}
@@ -98,6 +106,21 @@ int main(int argc, char* argv[])
 		//APPEND time to file name
 		//using ISO 8601, no colons or timezone like in lab2
 		//option should default to disabled
+		
+		/*
+		source:stackoverflow.com/a/21159131
+		//makes time structure
+		struct tm* clock;
+		//makes file detail structue
+		struct stat det;
+		//gets details of backup file
+		stat(filename, &det);
+		clock = gmtime(&(det.st_ctime));
+		const char *creation_time = clock;
+
+		printf("Created file with appended time");
+		*/
+
 	}
 
 	ssize_t EVENT_SIZE = (sizeof (struct inotify_event));

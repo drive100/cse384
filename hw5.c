@@ -9,6 +9,7 @@
 #include <sys/types.h>
 #include <time.h>
 #include <utime.h>
+#include <linux/limits.h>
 
 void copy_file(const char* inpath,const char* outpath, size_t modnum);
 
@@ -16,7 +17,6 @@ int main(int argc, char* argv[])
 {
 	const char* filename = argv[1];
 	
-
 	bool opt_h = false;
 	bool opt_d = false;
 	bool opt_m = false;
@@ -26,6 +26,7 @@ int main(int argc, char* argv[])
 	char* backup_path;
 	size_t modnum = 1;//this number stores the number of times the user has modified the original file
 	//used to name the backup files for revision
+
 	if (argc == 1)
 	{
 		printf("Usage: This program will replicate and monitor the");
@@ -100,7 +101,7 @@ int main(int argc, char* argv[])
 	if (opt_m == true){
 		//to disable meta-data duplication aka just copy file contents, nothing from 6b-f
 		//pick reasonable default permissions?
-		//"this option should default to disabled"
+		//"this option should default to disabled"1q
 	}
 
 	if (opt_t == true){
@@ -193,9 +194,23 @@ int main(int argc, char* argv[])
 
 void copy_file(const char* inpath,const char* outpath, size_t modnum)
 {
+	//outpath is directory of output (copy file)
 	const size_t data_size = 120;
 	char data[data_size];
 	int outft, inft, fileread = 1;
+
+	size_t rev = modnum;
+	char* append =  "_rev%d";
+
+	char rev_buff[10];
+	snprintf(rev_buff, 10, "_rev%d", rev);
+	
+	char buffer[PATH_MAX+10];
+	strcpy(buffer, outpath);
+	strcat(buffer, rev_buff);
+	printf("%s\n", buffer);
+
+
 
 	//create a output file, and the file will be in outpath
 	if(outft = open(outpath, O_CREAT | O_APPEND | O_RDWR) == -1)

@@ -156,7 +156,7 @@ int main(int argc, char* argv[])
 	int wd = inotify_add_watch(fd, path, IN_MODIFY | IN_DELETE);
 	int x;
 	char buffer[BUF_LEN];
-	bool mod = false;
+	int mod = 0;
 
 	while (1){
 		x = read(fd, buffer, BUF_LEN);
@@ -170,8 +170,9 @@ int main(int argc, char* argv[])
 			struct inotify_event* event = (struct inotify_event*)p;
 			if (event->mask & IN_MODIFY)
 			{
-				printf("The file %s is modified\n", path);
-				//copy_file(path, backup_path, opt_m);
+				mod++;
+				printf("%d = The file %s is modified\n",mod, path);
+				copy_file(path, backup_path, opt_m);
 			}
 			if (event->mask & IN_DELETE)
 			{

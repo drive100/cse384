@@ -152,9 +152,7 @@ int main(int argc, char* argv[])
 	char buffer[BUF_LEN];
 
 	while (1){
-		//printf("debugging+++++++++!!!!!!!!!!!!!!!!!\n");
 		x = read(fd, buffer, BUF_LEN);
-		//printf("debugging!!!!!!!!!!!!!!!!!\n");
 		if (x < 0 || wd < 0 || fd < 0)
 		{
 			perror("inotify error");
@@ -162,10 +160,7 @@ int main(int argc, char* argv[])
 		}
 		for (char* p = buffer; p < buffer + x;)
 		{
-			//printf("printing something \n");
 			struct inotify_event* event = (struct inotify_event*)p;
-			//if (event -> len)
-			//{
 			if (event->mask & IN_MODIFY)
 			{
 				printf("The file %s is modified\n", path);
@@ -175,7 +170,6 @@ int main(int argc, char* argv[])
 				printf("The file %s is deleted\n", path);
 				return EXIT_SUCCESS;
 			}
-			//}
 
 			p += sizeof(struct inotify_event) + event->len;
 		}
@@ -219,10 +213,7 @@ void copy_file(const char* inpath,const char* outpath, bool n)
 		exit(EXIT_FAILURE);
 	}
 	while(fileread != 0){
-		//printf("fileread = %d\n", fileread);
-		printf("111111111111111111111\n");
 		fileread = read(inft, data, data_size);
-		printf("222222222222222222222\n");
 		if(fileread == -1);
 		{
 			perror("read");

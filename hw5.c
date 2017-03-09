@@ -69,7 +69,7 @@ int main(int argc, char* argv[])
 
 	if (opt_d == true){
 		//d_arg = optarg;
-		printf("optarg = %s\n", d_arg);
+		//printf("optarg = %s\n", d_arg);
 		if (d_arg == NULL){
 			printf("You entered the -d option but did not enter a path.\n");
 			printf("The default path will be used.\n");
@@ -137,6 +137,11 @@ int main(int argc, char* argv[])
 	}
 	const char* path = argv[optind];//the location of the input file;
 	//location of the backup file is in backup_path
+	if (path == NULL)
+	{
+		printf("You did not give in a file\n");
+		return EXIT_SUCCESS;
+	}
 	if (access(path, F_OK) == -1)
 	{
 		printf("error: '%s' does not exist\n", path);
@@ -151,6 +156,7 @@ int main(int argc, char* argv[])
 	int wd = inotify_add_watch(fd, path, IN_MODIFY | IN_DELETE);
 	int x;
 	char buffer[BUF_LEN];
+	bool mod = false;
 
 	while (1){
 		x = read(fd, buffer, BUF_LEN);
@@ -165,7 +171,7 @@ int main(int argc, char* argv[])
 			if (event->mask & IN_MODIFY)
 			{
 				printf("The file %s is modified\n", path);
-				copy_file(path, backup_path, opt_m);
+				//copy_file(path, backup_path, opt_m);
 			}
 			if (event->mask & IN_DELETE)
 			{
@@ -175,7 +181,6 @@ int main(int argc, char* argv[])
 
 			p += sizeof(struct inotify_event) + event->len;
 		}
-		printf("modified~~~~~~~\n");
 	}
 
 }

@@ -230,33 +230,36 @@ void copy_file(const char* inpath,const char* outpath, size_t modnum)
 	close(inft);
 	close(outft);
 
-	struct stat *buf;
-	buf = malloc(sizeof(struct stat));
-	int stat_i;
-	stat_i = stat(inpath, buf);
-	if (stat_i == -1)
+	if(n == false)
 	{
-		perror("stat");
-		exit (EXIT_FAILURE);
-	}
+		struct stat *buf;
+		buf = malloc(sizeof(struct stat));
+		int stat_i;
+		stat_i = stat(inpath, buf);
+		if (stat_i == -1)
+		{
+			perror("stat");
+			exit (EXIT_FAILURE);
+		}
 	//change permission bits
-	if (chmod(outpath, buf->st_mode) == -1)
-	{
-		perror("chmod");
-		exit(EXIT_FAILURE);
-	}
+		if (chmod(outpath, buf->st_mode) == -1)
+		{
+			perror("chmod");
+			exit(EXIT_FAILURE);
+		}
 	//change ownership
-	if (chown(outpath, buf->st_uid, buf->st_gid))
-	{
-		perror("chown");
-		exit(EXIT_FAILURE);
-	}
-	struct utimbuf new_times;
-	new_times.modtime = buf->st_mtime;
-	new_times.actime = buf->st_ctime;
-	if (utime(outpath, &new_times) == -1)
-	{
-		perror("utime");
-		exit(EXIT_FAILURE);
+		if (chown(outpath, buf->st_uid, buf->st_gid))
+		{
+			perror("chown");
+			exit(EXIT_FAILURE);
+		}
+		struct utimbuf new_times;
+		new_times.modtime = buf->st_mtime;
+		new_times.actime = buf->st_ctime;
+		if (utime(outpath, &new_times) == -1)
+		{
+			perror("utime");
+			exit(EXIT_FAILURE);
+		}
 	}
 }

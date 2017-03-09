@@ -70,26 +70,24 @@ int main(int argc, char* argv[])
 			//need to check whether or not the argument passed to -d is an actual path
 			//if path is not a path, print out saying so and use default path
 			//if path is an acutal path, update path variable
-			struct stat fd;
+			
 
-			backup_path = d_arg;
-
-			if(stat(d_arg, &fd) == 0 && S_ISDIR(fd.st_mode))
-
-			if (access(backup_path, F_OK) == -1)
-
+			if (access(d_arg, F_OK) == -1)
 			{
-				printf("error: '%s' does not exist\n", backup_path);
+				printf("error: '%s' does not exist\n", d_arg);
 			}
 			else
 			{
-				if(stat(backup_path, &fd) == 0 && S_ISDIR(fd.st_mode))
+				struct stat fd;
+				if(stat(d_arg, &fd) == 0 && S_ISDIR(fd.st_mode))
+				//if(stat(backup_path, &fd) == 0 && S_ISDIR(fd.st_mode))
 				{
 					backupchanged = true;
+					backup_path = d_arg;
 					printf("By default, the backup folder is changed to %s\n", backup_path);
 				}
 				else{
-					printf("%s is not a folder\n", backup_path);
+					printf("%s is not a folder\n", d_arg);
 				//use default path;
 				}
 			}
@@ -130,7 +128,9 @@ int main(int argc, char* argv[])
 	{
 		backup_path = "~/Desktop";
 		printf("The default backup folder is %s\n", backup_path);
+		printf("debugging_____________!!!!!!!!!!!!!!!!!\n");
 	}
+	//printf("debugging000000000000000000!!!!!!!!!!!!!!!!!\n");
 	const char* path = argv[optind];//the location of the file comes into path;
 	if (access(path, F_OK) == -1)
 	{
@@ -142,12 +142,16 @@ int main(int argc, char* argv[])
 		printf("error: '%s' is unreadable\n", path);
 		return EXIT_SUCCESS;
 	}
+	//printf("debugging1111111111!!!!!!!!!!!!!!!!!\n");
 	int wd = inotify_add_watch(fd, path, IN_MODIFY | IN_DELETE);
+	//printf("debugging2222222222!!!!!!!!!!!!!!!!!\n");
 	int x;
 	char buffer[BUF_LEN];
 
 	while (1){
+		//printf("debugging+++++++++!!!!!!!!!!!!!!!!!\n");
 		x = read(fd, buffer, BUF_LEN);
+		//printf("debugging!!!!!!!!!!!!!!!!!\n");
 		if (x < 0 || wd < 0 || fd < 0)
 		{
 			perror("inotify error");

@@ -110,20 +110,12 @@ int main(int argc, char* argv[])
 		//APPEND time to file name
 		//using ISO 8601, no colons or timezone like in lab2
 		//option should default to disabled
-		
-		/*
-		source:stackoverflow.com/a/21159131
 		//makes time structure
-		struct tm* clock;
-		//makes file detail structue
-		struct stat det;
-		//gets details of backup file
-		stat(filename, &det);
-		clock = gmtime(&(det.st_ctime));
-		const char *creation_time = clock;
+		struct tm* time;
+		time_t now = time(NULL);
+		time = gmtime(&now);
 
 		printf("Created file with appended time");
-		*/
 
 	}
 
@@ -200,6 +192,8 @@ void copy_file(const char* inpath,const char* outpath, bool n)
 
 	size_t rev = modnum;
 	char* append =  "backup_rev%d";
+	char backup_buff[10];
+	snprintf(rev_buff, 10, "backup_rev")
 
 	char rev_buff[10];
 	snprintf(rev_buff, 10, "_rev%d", rev);

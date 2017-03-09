@@ -8,6 +8,7 @@
 #include <fcntl.h>
 #include <sys/types.h>
 #include <time.h>
+#include <utime.h>
 
 void copy_file(const char* inpath,const char* outpath);
 
@@ -126,12 +127,13 @@ int main(int argc, char* argv[])
 	int fd = inotify_init();
 	if (backupchanged == false)
 	{
-		backup_path = "~/Desktop";
+		backup_path = "/home/yihong/Desktop";
 		printf("The default backup folder is %s\n", backup_path);
-		printf("debugging_____________!!!!!!!!!!!!!!!!!\n");
+		//printf("debugging_____________!!!!!!!!!!!!!!!!!\n");
 	}
 	//printf("debugging000000000000000000!!!!!!!!!!!!!!!!!\n");
-	const char* path = argv[optind];//the location of the file comes into path;
+	const char* path = argv[optind];//the location of the input file;
+	//location of the backup file is in backup_path
 	if (access(path, F_OK) == -1)
 	{
 		printf("error: '%s' does not exist\n", path);
@@ -142,6 +144,13 @@ int main(int argc, char* argv[])
 		printf("error: '%s' is unreadable\n", path);
 		return EXIT_SUCCESS;
 	}
+	// if (access(backup_path, F_OK) == -1)
+	// {
+	// 	printf("error: '%s' does not exist\n", backup_path);
+	// 	return EXIT_SUCCESS;
+	// }
+	printf("path = %s\nbackup_path = %s\n", path, backup_path);
+	copy_file(path, backup_path);
 	//printf("debugging1111111111!!!!!!!!!!!!!!!!!\n");
 	int wd = inotify_add_watch(fd, path, IN_MODIFY | IN_DELETE);
 	//printf("debugging2222222222!!!!!!!!!!!!!!!!!\n");
@@ -193,13 +202,17 @@ void copy_file(const char* inpath,const char* outpath)
 		exit(EXIT_FAILURE);
 	}
 	//open the input file, and the file will be in inpath
-	if(inft = (open(inpath, O_RDONLY)) == -1)
+	if(inft = (open(inpath, O_RDONLY, S_IRWXG | S_IRWXU | S_IRWXO)) == -1)
 	{
 		perror("inpath open");
 		exit(EXIT_FAILURE);
 	}
 	while(fileread != 0){
-		if(fileread = (read(inft, data, data_size)) == -1);
+		//printf("fileread = %d\n", fileread);
+		printf("111111111111111111111\n");
+		fileread = read(inft, data, data_size);
+		printf("222222222222222222222\n");
+		if(fileread == -1);
 		{
 			perror("read");
 			exit(EXIT_FAILURE);
@@ -209,8 +222,39 @@ void copy_file(const char* inpath,const char* outpath)
 			perror("write");
 			exit(EXIT_FAILURE);
 		}
+		printf("fileread = %d\n", fileread);
 		
 	}
 	close(inft);
 	close(outft);
+
+	struct stat *buf;
+	buf = malloc(sizeof(struct stat));
+	int stat_i;
+	stat_i = stat(inpath, buf);
+	if (stat_i == -1)
+	{
+		perror("stat");
+		exit (EXIT_FAILURE);
+	}
+	//change permission bits
+	if (chmod(outpath, buf->st_mode) == -1)
+	{
+		perror("chmod");
+		exit(EXIT_FAILURE);
+	}
+	//change ownership
+	if (chown(outpath, buf->st_uid, buf->st_gid))
+	{
+		perror("chown");
+		exit(EXIT_FAILURE);
+	}
+	struct utimbuf new_times;
+	new_times.modtime = buf->st_mtime;
+	new_times.actime = buf->st_ctime;
+	if (utime(outpath, &new_times) == -1)
+	{
+		perror("utime");
+		exit(EXIT_FAILURE);
+	}
 }

@@ -10,7 +10,9 @@
 #include <time.h>
 #include <utime.h>
 
-void copy_file(const char* inpath,const char* outpath, size_t modnum, bool n);
+void copy_file(const char* inpath,const char* outpath, bool n);
+
+size_t modnum = 1;
 
 int main(int argc, char* argv[])
 {
@@ -23,7 +25,7 @@ int main(int argc, char* argv[])
 	char* d_arg = NULL;
 	bool backupchanged = false;
 	char* backup_path;
-	size_t modnum = 1;//this number stores the number of times the user has modified the original file
+	//size_t modnum = 1;//this number stores the number of times the user has modified the original file
 	//used to name the backup files for revision
 	if (argc == 1)
 	{
@@ -151,7 +153,7 @@ int main(int argc, char* argv[])
 	// 	return EXIT_SUCCESS;
 	// }
 	printf("path = %s\nbackup_path = %s\n", path, backup_path);
-	copy_file(path, backup_path, modnum, opt_m);
+	copy_file(path, backup_path, opt_m);
 	int wd = inotify_add_watch(fd, path, IN_MODIFY | IN_DELETE);
 	int x;
 	char buffer[BUF_LEN];
@@ -188,7 +190,7 @@ int main(int argc, char* argv[])
 
 }
 
-void copy_file(const char* inpath,const char* outpath, size_t modnum, bool n)
+void copy_file(const char* inpath,const char* outpath, bool n)
 {
 	const size_t data_size = 120;
 	char data[data_size];

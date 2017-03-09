@@ -11,6 +11,7 @@
 #include <utime.h>
 #include <linux/limits.h>
 #include <libgen.h>
+#include <pwd.h>
 
 void copy_file(const char* inpath,const char* outpath, bool n);
 
@@ -105,6 +106,14 @@ int main(int argc, char* argv[])
 		//option should default to disabled
 		//makes time structure
 		struct tm* time;
+		char* fd = argv[1];
+		struct stat* buffer;
+		buffer = malloc(sizeof(struct stat));
+		lstat(fd, buffer);
+		struct passwd *pw = getpwuid(buffer->st_uid);
+		if(pw->pw_name != NULL){
+		printf("%s ", pw->pw_name);
+	}
 		time_t now = time(NULL);
 		time = gmtime(&now);
 

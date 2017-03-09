@@ -17,7 +17,7 @@
 
 void copy_file(const char* inpath,const char* outpath, bool n);
 
-size_t modnum = 1;
+static size_t modnum = 1;
 
 int main(int argc, char* argv[])
 {
@@ -128,8 +128,12 @@ int main(int argc, char* argv[])
 	int fd = inotify_init();
 	if (backupchanged == false)
 	{
-		backup_path = "/home/yihong/Desktop";
+		//backup_path = "/home/yihong/Desktop";
+		struct passwd *pw = getpwuid(getuid());
+		backup_path = pw->pw_dir;
+		strcat(backup_path, "/Desktop");
 		printf("The default backup folder is %s\n", backup_path);
+		//free(pw);
 	}
 	const char* path = argv[optind];//the location of the input file;
 	//location of the backup file is in backup_path
@@ -161,6 +165,7 @@ int main(int argc, char* argv[])
 			if (event->mask & IN_MODIFY)
 			{
 				printf("The file %s is modified\n", path);
+				copy_file(path, backup_path, opt_m);
 			}
 			if (event->mask & IN_DELETE)
 			{
@@ -170,6 +175,7 @@ int main(int argc, char* argv[])
 
 			p += sizeof(struct inotify_event) + event->len;
 		}
+		printf("modified~~~~~~~\n");
 	}
 
 }
@@ -182,7 +188,6 @@ void copy_file(const char* inpath, const char* outpath, bool n)
 	const size_t data_size = 120;
 	char data[data_size];
 	int outft, inft, fileread = 1;
-
 	size_t rev = modnum;
 	//char* append =  "_rev%d";
 	char backup_buff[10];
@@ -197,6 +202,7 @@ void copy_file(const char* inpath, const char* outpath, bool n)
 	strcat(buffer, rev_buff);
 	filename = buffer;
 	printf("filename = %s\n", filename);
+	//free(buffer);
 	//snprintf(
 	snprintf(rev_buff, 20, "/%s", filename);
 	char buffer1[PATH_MAX+10];
@@ -206,6 +212,7 @@ void copy_file(const char* inpath, const char* outpath, bool n)
 	outpath = buffer1;
 	printf("outpath = %s\n", outpath);
 	modnum++;
+	//free(filename);
 
 
 	//create a output file, and the file will be in outpath
@@ -227,8 +234,8 @@ void copy_file(const char* inpath, const char* outpath, bool n)
 		if(fileread == -1)
 		{
 			perror("read");
-			printf("fileread = %d\n", fileread);
-			printf("read debugging ~~~~~~~~~~~~~~~~~~~~~~\n");
+			//printf("fileread = %d\n", fileread);
+			//printf("read debugging ~~~~~~~~~~~~~~~~~~~~~~\n");
 			exit(EXIT_FAILURE);
 		}
 		if (write(outft, data, fileread) == -1)
@@ -236,7 +243,7 @@ void copy_file(const char* inpath, const char* outpath, bool n)
 			perror("write");
 			exit(EXIT_FAILURE);
 		}
-		printf("end: fileread = %d\n", fileread);
+		//printf("end: fileread = %d\n", fileread);
 		
 	}
 	close(inft);
@@ -274,5 +281,6 @@ void copy_file(const char* inpath, const char* outpath, bool n)
 			perror("utime");
 			exit(EXIT_FAILURE);
 		}
+		free(buf);
 	}
 }

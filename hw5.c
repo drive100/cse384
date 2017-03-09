@@ -153,7 +153,7 @@ int main(int argc, char* argv[])
 		return EXIT_SUCCESS;
 	}
 	copy_file(path, backup_path, opt_m);
-	int wd = inotify_add_watch(fd, path, IN_MODIFY | IN_DELETE);
+	int wd = inotify_add_watch(fd, path, IN_MODIFY | IN_DELETE_SELF);
 	int x;
 	char buffer[BUF_LEN];
 	int mod = 0;
@@ -240,8 +240,6 @@ void copy_file(const char* inpath, const char* outpath, bool n)
 		if(fileread == -1)
 		{
 			perror("read");
-			//printf("fileread = %d\n", fileread);
-			//printf("read debugging ~~~~~~~~~~~~~~~~~~~~~~\n");
 			exit(EXIT_FAILURE);
 		}
 		if (write(outft, data, fileread) == -1)
@@ -249,7 +247,6 @@ void copy_file(const char* inpath, const char* outpath, bool n)
 			perror("write");
 			exit(EXIT_FAILURE);
 		}
-		//printf("end: fileread = %d\n", fileread);
 		
 	}
 	close(inft);

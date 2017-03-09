@@ -17,7 +17,7 @@
 
 void copy_file(const char* inpath,const char* outpath, bool n);
 
-static size_t modnum = 1;
+static size_t modnum = 0;
 
 int main(int argc, char* argv[])
 {
@@ -174,10 +174,10 @@ int main(int argc, char* argv[])
 				printf("%d = The file %s is modified\n",mod, path);
 				copy_file(path, backup_path, opt_m);
 			}
-			if (event->mask & IN_DELETE)
+			if (event->mask & IN_DELETE_SELF)
 			{
 				printf("The file %s is deleted\n", path);
-				return EXIT_FAILURE;
+				return EXIT_SUCCESS;
 			}
 
 			p += sizeof(struct inotify_event) + event->len;

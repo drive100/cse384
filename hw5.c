@@ -107,19 +107,19 @@ int main(int argc, char* argv[])
 		//using ISO 8601, no colons or timezone like in lab2
 		//option should default to disabled
 		//makes time structure
-		struct tm* time;
-		char* fd = argv[1];
-		struct stat* buffer;
-		buffer = malloc(sizeof(struct stat));
-		lstat(fd, buffer);
-		struct passwd *pw = getpwuid(buffer->st_uid);
-		if(pw->pw_name != NULL){
-		printf("%s ", pw->pw_name);
-	}
-		time_t now = time(NULL);
-		time = gmtime(&now);
+	// 	struct tm* time;
+	// 	char* fd = argv[1];
+	// 	struct stat* buffer;
+	// 	buffer = malloc(sizeof(struct stat));
+	// 	lstat(fd, buffer);
+	// 	struct passwd *pw = getpwuid(buffer->st_uid);
+	// 	if(pw->pw_name != NULL){
+	// 	printf("%s ", pw->pw_name);
+	// }
+	// 	time_t now = time(NULL);
+	// 	time = gmtime(&now);
 
-		printf("Created file with appended time");
+	// 	printf("Created file with appended time");
 
 	}
 
@@ -184,9 +184,9 @@ void copy_file(const char* inpath, const char* outpath, bool n)
 	int outft, inft, fileread = 1;
 
 	size_t rev = modnum;
-	char* append =  "_rev%d";
+	//char* append =  "_rev%d";
 	char backup_buff[10];
-	snprintf(rev_buff, 10, "backup_rev")
+	//snprintf(rev_buff, 10, "backup_rev")
 
 
 	char rev_buff[20];
@@ -209,14 +209,14 @@ void copy_file(const char* inpath, const char* outpath, bool n)
 
 
 	//create a output file, and the file will be in outpath
-	outft = (open(outpath, O_CREAT | O_APPEND | O_RDWR));
+	outft = (open(outpath, O_CREAT | O_APPEND | O_RDWR,S_IRWXG | S_IRWXU | S_IRWXO));
 	if(outft == -1)
 	{
 		perror("outpath open");
 		exit(EXIT_FAILURE);
 	}
 	//open the input file, and the file will be in inpath
-	inft = (open(inpath, O_RDONLY, S_IRWXG | S_IRWXU | S_IRWXO));
+	inft = (open(inpath, O_RDONLY));
 	if(inft == -1)
 	{
 		perror("inpath open");
@@ -227,7 +227,8 @@ void copy_file(const char* inpath, const char* outpath, bool n)
 		if(fileread == -1);
 		{
 			perror("read");
-			exit(EXIT_FAILURE);
+			printf("read debugging ~~~~~~~~~~~~~~~~~~~~~~\n");
+			//exit(EXIT_FAILURE);
 		}
 		if (write(outft, data, fileread) == -1)
 		{

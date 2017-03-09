@@ -11,6 +11,7 @@
 #include <utime.h>
 #include <linux/limits.h>
 #include <libgen.h>
+#include <string.h>
 
 void copy_file(const char* inpath,const char* outpath, bool n);
 
@@ -190,25 +191,35 @@ int main(int argc, char* argv[])
 
 }
 
-void copy_file(const char* inpath,const char* outpath, bool n)
+void copy_file(const char* inpath, const char* outpath, bool n)
 {
 	//outpath is directory of output (copy file)
-	const char* filename = basename(inpath);
+	char* c = strdup(inpath);
+	char* filename = basename(c);
 	const size_t data_size = 120;
 	char data[data_size];
 	int outft, inft, fileread = 1;
 
 	size_t rev = modnum;
-	char* append =  "backup_rev%d";
+	char* append =  "_rev%d";
 
-	char rev_buff[10];
-	snprintf(rev_buff, 10, "_rev%d", rev);
+	char rev_buff[20];
+	snprintf(rev_buff, 20, "_rev%d", rev);
 	
 	char buffer[PATH_MAX+10];
-	strcpy(buffer, outpath);
+	strcpy(buffer, filename);
 	strcat(buffer, rev_buff);
-	printf("%s\n", buffer);
-
+	filename = buffer;
+	printf("filename = %s\n", filename);
+	//snprintf(
+	snprintf(rev_buff, 20, "/%s", filename);
+	char buffer1[PATH_MAX+10];
+	strcpy(buffer1, outpath);
+	strcat(buffer1, rev_buff);
+	//printf("buffer1 = %s\n", buffer1);
+	outpath = buffer1;
+	printf("outpath = %s\n", outpath);
+	modnum++;
 
 
 	//create a output file, and the file will be in outpath

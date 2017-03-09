@@ -10,12 +10,11 @@
 #include <time.h>
 #include <utime.h>
 
-void copy_file(const char* inpath,const char* outpath, size_t modnum);
+void copy_file(const char* inpath,const char* outpath, size_t modnum, bool n);
 
 int main(int argc, char* argv[])
 {
 	const char* filename = argv[1];
-	
 
 	bool opt_h = false;
 	bool opt_d = false;
@@ -101,6 +100,8 @@ int main(int argc, char* argv[])
 		//to disable meta-data duplication aka just copy file contents, nothing from 6b-f
 		//pick reasonable default permissions?
 		//"this option should default to disabled"
+
+
 	}
 
 	if (opt_t == true){
@@ -131,9 +132,7 @@ int main(int argc, char* argv[])
 	{
 		backup_path = "/home/yihong/Desktop";
 		printf("The default backup folder is %s\n", backup_path);
-		//printf("debugging_____________!!!!!!!!!!!!!!!!!\n");
 	}
-	//printf("debugging000000000000000000!!!!!!!!!!!!!!!!!\n");
 	const char* path = argv[optind];//the location of the input file;
 	//location of the backup file is in backup_path
 	if (access(path, F_OK) == -1)
@@ -152,10 +151,8 @@ int main(int argc, char* argv[])
 	// 	return EXIT_SUCCESS;
 	// }
 	printf("path = %s\nbackup_path = %s\n", path, backup_path);
-	copy_file(path, backup_path, modnum);
-	//printf("debugging1111111111!!!!!!!!!!!!!!!!!\n");
+	copy_file(path, backup_path, modnum, opt_m);
 	int wd = inotify_add_watch(fd, path, IN_MODIFY | IN_DELETE);
-	//printf("debugging2222222222!!!!!!!!!!!!!!!!!\n");
 	int x;
 	char buffer[BUF_LEN];
 
@@ -191,20 +188,22 @@ int main(int argc, char* argv[])
 
 }
 
-void copy_file(const char* inpath,const char* outpath, size_t modnum)
+void copy_file(const char* inpath,const char* outpath, size_t modnum, bool n)
 {
 	const size_t data_size = 120;
 	char data[data_size];
 	int outft, inft, fileread = 1;
 
 	//create a output file, and the file will be in outpath
-	if(outft = open(outpath, O_CREAT | O_APPEND | O_RDWR) == -1)
+	outft = (open(outpath, O_CREAT | O_APPEND | O_RDWR));
+	if(outft == -1)
 	{
 		perror("outpath open");
 		exit(EXIT_FAILURE);
 	}
 	//open the input file, and the file will be in inpath
-	if(inft = (open(inpath, O_RDONLY, S_IRWXG | S_IRWXU | S_IRWXO)) == -1)
+	inft = (open(inpath, O_RDONLY, S_IRWXG | S_IRWXU | S_IRWXO));
+	if(inft == -1)
 	{
 		perror("inpath open");
 		exit(EXIT_FAILURE);

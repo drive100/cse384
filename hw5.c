@@ -11,9 +11,6 @@
 #include <utime.h>
 #include <linux/limits.h>
 #include <libgen.h>
-#include <string.h>
-#include <pwd.h>
-
 
 void copy_file(const char* inpath,const char* outpath, bool n);
 
@@ -108,14 +105,6 @@ int main(int argc, char* argv[])
 		//option should default to disabled
 		//makes time structure
 		struct tm* time;
-		char* fd = argv[1];
-		struct stat* buffer;
-		buffer = malloc(sizeof(struct stat));
-		lstat(fd, buffer);
-		struct passwd *pw = getpwuid(buffer->st_uid);
-		if(pw->pw_name != NULL){
-		printf("%s ", pw->pw_name);
-	}
 		time_t now = time(NULL);
 		time = gmtime(&now);
 
@@ -181,38 +170,27 @@ int main(int argc, char* argv[])
 
 }
 
-void copy_file(const char* inpath, const char* outpath, bool n)
+void copy_file(const char* inpath,const char* outpath, bool n)
 {
 	//outpath is directory of output (copy file)
-	char* c = strdup(inpath);
-	char* filename = basename(c);
+	const char* filename = basename(inpath);
 	const size_t data_size = 120;
 	char data[data_size];
 	int outft, inft, fileread = 1;
 
 	size_t rev = modnum;
-	char* append =  "_rev%d";
+	char* append =  "backup_rev%d";
 	char backup_buff[10];
 	snprintf(rev_buff, 10, "backup_rev")
 
-
-	char rev_buff[20];
-	snprintf(rev_buff, 20, "_rev%d", rev);
+	char rev_buff[10];
+	snprintf(rev_buff, 10, "_rev%d", rev);
 	
 	char buffer[PATH_MAX+10];
-	strcpy(buffer, filename);
+	strcpy(buffer, outpath);
 	strcat(buffer, rev_buff);
-	filename = buffer;
-	printf("filename = %s\n", filename);
-	//snprintf(
-	snprintf(rev_buff, 20, "/%s", filename);
-	char buffer1[PATH_MAX+10];
-	strcpy(buffer1, outpath);
-	strcat(buffer1, rev_buff);
-	//printf("buffer1 = %s\n", buffer1);
-	outpath = buffer1;
-	printf("outpath = %s\n", outpath);
-	modnum++;
+	printf("%s\n", buffer);
+
 
 
 	//create a output file, and the file will be in outpath

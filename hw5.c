@@ -176,7 +176,7 @@ int main(int argc, char* argv[])
 			if (event->mask & IN_DELETE)
 			{
 				printf("The file %s is deleted\n", path);
-				return EXIT_SUCCESS;
+				return EXIT_FAILURE;
 			}
 
 			p += sizeof(struct inotify_event) + event->len;

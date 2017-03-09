@@ -143,12 +143,6 @@ int main(int argc, char* argv[])
 		printf("error: '%s' is unreadable\n", path);
 		return EXIT_SUCCESS;
 	}
-	// if (access(backup_path, F_OK) == -1)
-	// {
-	// 	printf("error: '%s' does not exist\n", backup_path);
-	// 	return EXIT_SUCCESS;
-	// }
-	printf("path = %s\nbackup_path = %s\n", path, backup_path);
 	copy_file(path, backup_path, opt_m);
 	int wd = inotify_add_watch(fd, path, IN_MODIFY | IN_DELETE);
 	int x;
@@ -257,18 +251,19 @@ void copy_file(const char* inpath, const char* outpath, bool n)
 			perror("stat");
 			exit (EXIT_FAILURE);
 		}
-	//change permission bits
+	    //change permission bits
 		if (chmod(outpath, buf->st_mode) == -1)
 		{
 			perror("chmod");
 			exit(EXIT_FAILURE);
 		}
-	//change ownership
+	    //change ownership
 		if (chown(outpath, buf->st_uid, buf->st_gid))
 		{
 			perror("chown");
 			exit(EXIT_FAILURE);
 		}
+		//source: stackoverflow.com/questions/2185338/how-to-set-the-modification-time-of-a-file-programmatically
 		struct utimbuf new_times;
 		new_times.modtime = buf->st_mtime;
 		new_times.actime = buf->st_ctime;

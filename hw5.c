@@ -99,13 +99,6 @@ int main(int argc, char* argv[])
 		}
 	}
 	
-	if (opt_m == true){
-		//to disable meta-data duplication aka just copy file contents, nothing from 6b-f
-		//pick reasonable default permissions?
-		//"this option should default to disabled"1q
-		//"this option should default to disabled"
-	}
-
 	if (opt_t == true){
 		//APPEND time to file name
 		//using ISO 8601, no colons or timezone like in lab2

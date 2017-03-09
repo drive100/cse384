@@ -224,18 +224,19 @@ void copy_file(const char* inpath, const char* outpath, bool n)
 	}
 	while(fileread != 0){
 		fileread = read(inft, data, data_size);
-		if(fileread == -1);
+		if(fileread == -1)
 		{
 			perror("read");
+			printf("fileread = %d\n", fileread);
 			printf("read debugging ~~~~~~~~~~~~~~~~~~~~~~\n");
-			//exit(EXIT_FAILURE);
+			exit(EXIT_FAILURE);
 		}
 		if (write(outft, data, fileread) == -1)
 		{
 			perror("write");
 			exit(EXIT_FAILURE);
 		}
-		printf("fileread = %d\n", fileread);
+		printf("end: fileread = %d\n", fileread);
 		
 	}
 	close(inft);

@@ -12,6 +12,8 @@
 #include <linux/limits.h>
 #include <libgen.h>
 #include <string.h>
+#include <pwd.h>
+
 
 void copy_file(const char* inpath,const char* outpath, bool n);
 
@@ -100,31 +102,24 @@ int main(int argc, char* argv[])
 		}
 	}
 	
-	if (opt_m == true){
-		//to disable meta-data duplication aka just copy file contents, nothing from 6b-f
-		//pick reasonable default permissions?
-		//"this option should default to disabled"1q
-		//"this option should default to disabled"
-	}
-
 	if (opt_t == true){
 		//APPEND time to file name
 		//using ISO 8601, no colons or timezone like in lab2
 		//option should default to disabled
-		
-		/*
-		source:stackoverflow.com/a/21159131
 		//makes time structure
-		struct tm* clock;
-		//makes file detail structue
-		struct stat det;
-		//gets details of backup file
-		stat(filename, &det);
-		clock = gmtime(&(det.st_ctime));
-		const char *creation_time = clock;
+		struct tm* time;
+		char* fd = argv[1];
+		struct stat* buffer;
+		buffer = malloc(sizeof(struct stat));
+		lstat(fd, buffer);
+		struct passwd *pw = getpwuid(buffer->st_uid);
+		if(pw->pw_name != NULL){
+		printf("%s ", pw->pw_name);
+	}
+		time_t now = time(NULL);
+		time = gmtime(&now);
 
 		printf("Created file with appended time");
-		*/
 
 	}
 
@@ -160,9 +155,7 @@ int main(int argc, char* argv[])
 	char buffer[BUF_LEN];
 
 	while (1){
-		//printf("debugging+++++++++!!!!!!!!!!!!!!!!!\n");
 		x = read(fd, buffer, BUF_LEN);
-		//printf("debugging!!!!!!!!!!!!!!!!!\n");
 		if (x < 0 || wd < 0 || fd < 0)
 		{
 			perror("inotify error");
@@ -170,10 +163,7 @@ int main(int argc, char* argv[])
 		}
 		for (char* p = buffer; p < buffer + x;)
 		{
-			//printf("printing something \n");
 			struct inotify_event* event = (struct inotify_event*)p;
-			//if (event -> len)
-			//{
 			if (event->mask & IN_MODIFY)
 			{
 				printf("The file %s is modified\n", path);
@@ -183,7 +173,6 @@ int main(int argc, char* argv[])
 				printf("The file %s is deleted\n", path);
 				return EXIT_SUCCESS;
 			}
-			//}
 
 			p += sizeof(struct inotify_event) + event->len;
 		}
@@ -202,6 +191,9 @@ void copy_file(const char* inpath, const char* outpath, bool n)
 
 	size_t rev = modnum;
 	char* append =  "_rev%d";
+	char backup_buff[10];
+	snprintf(rev_buff, 10, "backup_rev")
+
 
 	char rev_buff[20];
 	snprintf(rev_buff, 20, "_rev%d", rev);
@@ -237,10 +229,7 @@ void copy_file(const char* inpath, const char* outpath, bool n)
 		exit(EXIT_FAILURE);
 	}
 	while(fileread != 0){
-		//printf("fileread = %d\n", fileread);
-		printf("111111111111111111111\n");
 		fileread = read(inft, data, data_size);
-		printf("222222222222222222222\n");
 		if(fileread == -1);
 		{
 			perror("read");

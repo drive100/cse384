@@ -108,6 +108,7 @@ int main(int argc, char* argv[])
 		time_t now = time(NULL);
 		time = gmtime(&now);
 
+
 		printf("Created file with appended time");
 
 	}

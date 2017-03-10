@@ -14,7 +14,7 @@
 
 void copy_file(const char* inpath,const char* outpath, bool n);
 
-size_t modnum = 1;
+static size_t modnum = 0;
 
 int main(int argc, char* argv[])
 {
@@ -66,7 +66,7 @@ int main(int argc, char* argv[])
 
 	if (opt_d == true){
 		//d_arg = optarg;
-		printf("optarg = %s\n", d_arg);
+		//printf("optarg = %s\n", d_arg);
 		if (d_arg == NULL){
 			printf("You entered the -d option but did not enter a path.\n");
 			printf("The default path will be used.\n");
@@ -116,6 +116,20 @@ int main(int argc, char* argv[])
  	 puts (buffer);
 
 	printf("Created file with appended time");
+	// 	struct tm* time;
+	// 	char* fd = argv[1];
+	// 	struct stat* buffer;
+	// 	buffer = malloc(sizeof(struct stat));
+	// 	lstat(fd, buffer);
+	// 	struct passwd *pw = getpwuid(buffer->st_uid);
+	// 	if(pw->pw_name != NULL){
+	// 	printf("%s ", pw->pw_name);
+	// }
+	// 	time_t now = time(NULL);
+	// 	time = gmtime(&now);
+
+	// 	printf("Created file with appended time");
+
 
 	}
 
@@ -124,11 +138,20 @@ int main(int argc, char* argv[])
 	int fd = inotify_init();
 	if (backupchanged == false)
 	{
-		backup_path = "/home/yihong/Desktop";
+		//backup_path = "/home/yihong/Desktop";
+		struct passwd *pw = getpwuid(getuid());
+		backup_path = pw->pw_dir;
+		strcat(backup_path, "/Desktop");
 		printf("The default backup folder is %s\n", backup_path);
+		//free(pw);
 	}
 	const char* path = argv[optind];//the location of the input file;
 	//location of the backup file is in backup_path
+	if (path == NULL)
+	{
+		printf("You did not give in a file\n");
+		return EXIT_SUCCESS;
+	}
 	if (access(path, F_OK) == -1)
 	{
 		printf("error: '%s' does not exist\n", path);
@@ -139,16 +162,11 @@ int main(int argc, char* argv[])
 		printf("error: '%s' is unreadable\n", path);
 		return EXIT_SUCCESS;
 	}
-	// if (access(backup_path, F_OK) == -1)
-	// {
-	// 	printf("error: '%s' does not exist\n", backup_path);
-	// 	return EXIT_SUCCESS;
-	// }
-	printf("path = %s\nbackup_path = %s\n", path, backup_path);
 	copy_file(path, backup_path, opt_m);
-	int wd = inotify_add_watch(fd, path, IN_MODIFY | IN_DELETE);
+	int wd = inotify_add_watch(fd, path, IN_MODIFY | IN_DELETE_SELF);
 	int x;
 	char buffer[BUF_LEN];
+	int mod = 0;
 
 	while (1){
 		x = read(fd, buffer, BUF_LEN);
@@ -162,9 +180,11 @@ int main(int argc, char* argv[])
 			struct inotify_event* event = (struct inotify_event*)p;
 			if (event->mask & IN_MODIFY)
 			{
-				printf("The file %s is modified\n", path);
+				mod++;
+				printf("%d = The file %s is modified\n",mod, path);
+				copy_file(path, backup_path, opt_m);
 			}
-			if (event->mask & IN_DELETE)
+			if (event->mask & IN_DELETE_SELF)
 			{
 				printf("The file %s is deleted\n", path);
 				return EXIT_SUCCESS;
@@ -183,11 +203,13 @@ void copy_file(const char* inpath,const char* outpath, bool n)
 	const size_t data_size = 120;
 	char data[data_size];
 	int outft, inft, fileread = 1;
-
 	size_t rev = modnum;
-	char* append =  "backup_rev%d";
+
+
+	//char* append =  "_rev%d";
+
 	char backup_buff[10];
-	snprintf(rev_buff, 10, "backup_rev")
+	//snprintf(rev_buff, 10, "backup_rev")
 
 	char rev_buff[10];
 	snprintf(rev_buff, 10, "_rev%d", rev);
@@ -195,19 +217,34 @@ void copy_file(const char* inpath,const char* outpath, bool n)
 	char buffer[PATH_MAX+10];
 	strcpy(buffer, outpath);
 	strcat(buffer, rev_buff);
+
 	printf("%s\n", buffer);
+
+	filename = buffer;
+	printf("filename = %s\n", filename);
+	//free(buffer);
+	//snprintf(
+	snprintf(rev_buff, 20, "/%s", filename);
+	char buffer1[PATH_MAX+10];
+	strcpy(buffer1, outpath);
+	strcat(buffer1, rev_buff);
+	//printf("buffer1 = %s\n", buffer1);
+	outpath = buffer1;
+	printf("outpath = %s\n", outpath);
+	modnum++;
+	//free(filename);
 
 
 
 	//create a output file, and the file will be in outpath
-	outft = (open(outpath, O_CREAT | O_APPEND | O_RDWR));
+	outft = (open(outpath, O_CREAT | O_APPEND | O_RDWR,S_IRWXG | S_IRWXU | S_IRWXO));
 	if(outft == -1)
 	{
 		perror("outpath open");
 		exit(EXIT_FAILURE);
 	}
 	//open the input file, and the file will be in inpath
-	inft = (open(inpath, O_RDONLY, S_IRWXG | S_IRWXU | S_IRWXO));
+	inft = (open(inpath, O_RDONLY));
 	if(inft == -1)
 	{
 		perror("inpath open");
@@ -215,7 +252,7 @@ void copy_file(const char* inpath,const char* outpath, bool n)
 	}
 	while(fileread != 0){
 		fileread = read(inft, data, data_size);
-		if(fileread == -1);
+		if(fileread == -1)
 		{
 			perror("read");
 			exit(EXIT_FAILURE);
@@ -225,7 +262,6 @@ void copy_file(const char* inpath,const char* outpath, bool n)
 			perror("write");
 			exit(EXIT_FAILURE);
 		}
-		printf("fileread = %d\n", fileread);
 		
 	}
 	close(inft);
@@ -242,18 +278,19 @@ void copy_file(const char* inpath,const char* outpath, bool n)
 			perror("stat");
 			exit (EXIT_FAILURE);
 		}
-	//change permission bits
+	    //change permission bits
 		if (chmod(outpath, buf->st_mode) == -1)
 		{
 			perror("chmod");
 			exit(EXIT_FAILURE);
 		}
-	//change ownership
+	    //change ownership
 		if (chown(outpath, buf->st_uid, buf->st_gid))
 		{
 			perror("chown");
 			exit(EXIT_FAILURE);
 		}
+		//source: stackoverflow.com/questions/2185338/how-to-set-the-modification-time-of-a-file-programmatically
 		struct utimbuf new_times;
 		new_times.modtime = buf->st_mtime;
 		new_times.actime = buf->st_ctime;
@@ -262,5 +299,6 @@ void copy_file(const char* inpath,const char* outpath, bool n)
 			perror("utime");
 			exit(EXIT_FAILURE);
 		}
+		free(buf);
 	}
 }

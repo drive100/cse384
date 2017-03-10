@@ -96,9 +96,14 @@ int main(int argc, char* argv[])
 		}
 	}
 	if (opt_t == true){
-	printf("Cpying the original file with appended time\n");
-
+		printf("Cpying the original file with appended time\n");
 	}
+	if (opt_m == true)
+	{
+		printf("Meta-data duplication on replicas are now disabled.\n");
+	}
+
+
 
 	ssize_t EVENT_SIZE = (sizeof (struct inotify_event));
 	ssize_t BUF_LEN = (1024 * (EVENT_SIZE + 16));
@@ -145,12 +150,13 @@ int main(int argc, char* argv[])
 			if (event->mask & IN_MODIFY)
 			{
 				mod++;
-				printf("%d = The file %s is modified\n",mod, path);
+				printf("%d  The file %s is modified, a replica is made\n",mod, path);
 				copy_file(path, backup_path, opt_m, opt_t);
 			}
 			if (event->mask & IN_DELETE_SELF)
 			{
 				printf("The file %s is deleted\n", path);
+				printf("The program is now terminated\n");
 				return EXIT_SUCCESS;
 			}
 			p += sizeof(struct inotify_event) + event->len;
@@ -165,7 +171,8 @@ void copy_file(const char* inpath,char* outpath, bool n, bool t)
 	char* file;
 	file = strdup(inpath);
 	char* filename = basename(file);
-	printf("filename = %s, file = %s, inpath = %s\n", filename, file, inpath);
+	char file1[100];
+	//printf("filename = %s, file = %s, inpath = %s\n", filename, file, inpath);
 	const size_t data_size = 120;
 	char data[data_size];
 	int outft, inft, fileread = 1;
@@ -181,43 +188,44 @@ void copy_file(const char* inpath,char* outpath, bool n, bool t)
 		char buffer[PATH_MAX+10];
 		strcpy(buffer, filename);
 		strcat(buffer, rev_buff);
-		printf("%s\n", buffer);
-		filename = buffer;
-		printf("filename = buffer = %s\n", filename);
+		//printf("%s\n", buffer);
+		strcpy(file1, buffer);
+		//printf("file1 = buffer = %s\n", file1);
 	}
 	else
 	{
-		printf("debugging ~~~~~~~~~~~~~~~dsdf~~2\n");
+		//printf("debugging ~~~~~~~~~~~~~~~dsdf~~2\n");
 		struct tm *timeinfo;
-		printf("debugging ~~~~~~~~~~sdf~~~~~~~2\n");
+		//printf("debugging ~~~~~~~~~~sdf~~~~~~~2\n");
 		time(&rawtime);
-		printf("debugging ~~~sdf~~~~~~~~~~~~~~2\n");
+		//printf("debugging ~~~sdf~~~~~~~~~~~~~~2\n");
 		timeinfo = localtime(&rawtime);
 		//time ( &rawti
-		printf("debugging ~~~~~~~~~~~~~~~~~2\n");
+		//printf("debugging ~~~~~~~~~~~~~~~~~2\n");
 		sprintf(rev_buff,"_%d%d%d%d%d%d",timeinfo->tm_year,timeinfo->tm_mon,
 			timeinfo->tm_mday, timeinfo->tm_hour, timeinfo->tm_min, 
 			timeinfo->tm_sec);
-		printf("debugging ~~~~~~~~~~~~~~~~~3\n");
+		//printf("debugging ~~~~~~~~~~~~~~~~~3\n");
 		//strftime (rev_buff,100,"%Y%m%d%I%M%S.",timeinfo);
-		puts (rev_buff);
-		strcat(filename, rev_buff);
-		printf("debugging ~~~~~~~~~~~~~~~~~4\n");
+		//puts (rev_buff);
+		strcpy(file1, filename);
+		strcat(file1, rev_buff);
+		//printf("debugging ~~~~~~~~~~~~~~~~~4\n");
 	}
-	printf("filename = %s\n", filename);
+	//printf("file1 = %s\n", file1);
 	//free(buffer);
 	//snprintf(
-	snprintf(rev_buff, 100, "/%s", filename);
+	snprintf(rev_buff, 100, "/%s", file1);
 	char buffer1[PATH_MAX+10];
 	strcpy(buffer1, outpath);
 	strcat(buffer1, rev_buff);
 	outpath = buffer1;
-	printf("outpath = %s\n", outpath);
+	//printf("outpath = %s\n", outpath);
 	modnum++;
-	printf("debugging ~~~~~~~~~~~~~~~~~5\n");
+	//printf("debugging ~~~~~~~~~~~~~~~~~5\n");
 	//free(filename);
 	//create a output file, and the file will be in outpath
-	outft = (open(outpath, O_CREAT | O_APPEND | O_RDWR,S_IRWXG | S_IRWXU | S_IRWXO));
+	outft = (open(outpath, O_CREAT | O_APPEND | O_RDWR, S_IRWXG | S_IRWXU));
 	if(outft == -1)
 	{
 		perror("outpath open");

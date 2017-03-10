@@ -79,6 +79,7 @@ int main(int argc, char* argv[])
 			if (access(d_arg, F_OK) == -1)
 			{
 				printf("error: '%s' does not exist\n", d_arg);
+				printf("The default folder will be used instead\n");
 			}
 			else
 			{
@@ -87,7 +88,7 @@ int main(int argc, char* argv[])
 				{
 					backupchanged = true;
 					backup_path = d_arg;
-					printf("By default, the backup folder is changed to %s\n", backup_path);
+					printf("The backup folder is changed to %s\n", backup_path);
 				}
 				else{
 					printf("%s is not a folder\n", d_arg);
@@ -96,7 +97,7 @@ int main(int argc, char* argv[])
 		}
 	}
 	if (opt_t == true){
-		printf("Cpying the original file with appended time\n");
+		printf("Copying the original file with appended time\n");
 	}
 	if (opt_m == true)
 	{
@@ -195,12 +196,21 @@ void copy_file(const char* inpath,char* outpath, bool n, bool t)
 	else
 	{
 		//printf("debugging ~~~~~~~~~~~~~~~dsdf~~2\n");
+		int error;
 		struct tm *timeinfo;
 		//printf("debugging ~~~~~~~~~~sdf~~~~~~~2\n");
-		time(&rawtime);
+		if (time(&rawtime) == -1)
+		{
+			perror("time");
+			exit(EXIT_FAILURE);
+		}
 		//printf("debugging ~~~sdf~~~~~~~~~~~~~~2\n");
 		timeinfo = localtime(&rawtime);
-		//time ( &rawti
+		if (timeinfo == NULL)
+		{
+			perror("localtime");
+			exit(EXIT_FAILURE);
+		}
 		//printf("debugging ~~~~~~~~~~~~~~~~~2\n");
 		sprintf(rev_buff,"_%d%d%d%d%d%d",timeinfo->tm_year,timeinfo->tm_mon,
 			timeinfo->tm_mday, timeinfo->tm_hour, timeinfo->tm_min, 

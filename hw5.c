@@ -52,6 +52,7 @@ int main(int argc, char* argv[])
 		opt = getopt(argc, argv, "hmtd:"); //restated because to reiterated through while loop to make sure there are not more options
 	}
 	if (opt_h == true){
+		//prints helpful information
 		printf("You entered the help option!\n");
 		printf("This program is for backing up files\n");
 		printf("Entering -h will give you this help guide\n");
@@ -65,16 +66,14 @@ int main(int argc, char* argv[])
 	}
 
 	if (opt_d == true){
+			//need to check whether or not the argument passed to -d is an actual path
+			//if path is not a path, print out saying so and use default path
+			//if path is an actual path, update path variable
 		if (d_arg == NULL){
 			printf("You entered the -d option but did not enter a path.\n");
 			printf("The default path will be used.\n");
-		
-}		else if (d_arg != NULL){
-			//need to check whether or not the argument passed to -d is an actual path
-			//if path is not a path, print out saying so and use default path
-			//if path is an acutal path, update path variable
-			
-
+		}		
+		else if (d_arg != NULL){
 			if (access(d_arg, F_OK) == -1)
 			{
 				printf("error: '%s' does not exist\n", d_arg);
@@ -90,28 +89,23 @@ int main(int argc, char* argv[])
 				}
 				else{
 					printf("%s is not a folder\n", d_arg);
-				//use default path;
 				}
 			}
 		}
 	}
-	
 	if (opt_t == true){
-		//APPEND time to file name
+		//APPENDS time to file name
 		//using ISO 8601, no colons or timezone like in lab2
 		//option should default to disabled
 		//makes time structure
+	//source:http://www.cplusplus.com/reference/ctime/strftime/
  	 time_t rawtime;
  	 struct tm * timeinfo;
  	 char buffer [80];
-
  	 time ( &rawtime );
  	 timeinfo = localtime( &rawtime );
-
  	 strftime (buffer,80," %Y%m%d%I%M%S.",timeinfo);
-
  	 puts (buffer);
-
 	printf("Created file with appended time");
 
 	}
@@ -126,8 +120,7 @@ int main(int argc, char* argv[])
 		strcat(backup_path, "/Desktop");
 		printf("The default backup folder is %s\n", backup_path);
 	}
-	const char* path = argv[optind];//the location of the input file;
-	//location of the backup file is in backup_path
+	const char* path = argv[optind]; //location of the input file;
 	if (path == NULL)
 	{
 		printf("You did not give in a file\n");
@@ -170,11 +163,9 @@ int main(int argc, char* argv[])
 				printf("The file %s is deleted\n", path);
 				return EXIT_SUCCESS;
 			}
-
 			p += sizeof(struct inotify_event) + event->len;
 		}
 	}
-
 }
 
 void copy_file(const char* inpath,const char* outpath, bool n)
@@ -233,7 +224,6 @@ void copy_file(const char* inpath,const char* outpath, bool n)
 			perror("write");
 			exit(EXIT_FAILURE);
 		}
-		
 	}
 	close(inft);
 	close(outft);
@@ -261,6 +251,7 @@ void copy_file(const char* inpath,const char* outpath, bool n)
 			perror("chown");
 			exit(EXIT_FAILURE);
 		}
+
 		//source: stackoverflow.com/questions/2185338/how-to-set-the-modification-time-of-a-file-programmatically
 		struct utimbuf new_times;
 		new_times.modtime = buf->st_mtime;

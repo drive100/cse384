@@ -11,9 +11,6 @@
 #include <utime.h>
 #include <linux/limits.h>
 #include <libgen.h>
-#include <string.h>
-#include <pwd.h>
-
 
 void copy_file(const char* inpath,const char* outpath, bool n);
 
@@ -73,8 +70,8 @@ int main(int argc, char* argv[])
 		if (d_arg == NULL){
 			printf("You entered the -d option but did not enter a path.\n");
 			printf("The default path will be used.\n");
-		}
-		else if (d_arg != NULL){
+		
+}		else if (d_arg != NULL){
 			//need to check whether or not the argument passed to -d is an actual path
 			//if path is not a path, print out saying so and use default path
 			//if path is an acutal path, update path variable
@@ -107,6 +104,18 @@ int main(int argc, char* argv[])
 		//using ISO 8601, no colons or timezone like in lab2
 		//option should default to disabled
 		//makes time structure
+ 	 time_t rawtime;
+ 	 struct tm * timeinfo;
+ 	 char buffer [80];
+
+ 	 time ( &rawtime );
+ 	 timeinfo = localtime( &rawtime );
+
+ 	 strftime (buffer,80," %Y%m%d%I%M%S.",timeinfo);
+
+ 	 puts (buffer);
+
+	printf("Created file with appended time");
 	// 	struct tm* time;
 	// 	char* fd = argv[1];
 	// 	struct stat* buffer;
@@ -120,6 +129,7 @@ int main(int argc, char* argv[])
 	// 	time = gmtime(&now);
 
 	// 	printf("Created file with appended time");
+
 
 	}
 
@@ -186,26 +196,30 @@ int main(int argc, char* argv[])
 
 }
 
-void copy_file(const char* inpath, const char* outpath, bool n)
+void copy_file(const char* inpath,const char* outpath, bool n)
 {
 	//outpath is directory of output (copy file)
-	char* c = strdup(inpath);
-	char* filename = basename(c);
+	const char* filename = basename(inpath);
 	const size_t data_size = 120;
 	char data[data_size];
 	int outft, inft, fileread = 1;
 	size_t rev = modnum;
+
+
 	//char* append =  "_rev%d";
+
 	char backup_buff[10];
 	//snprintf(rev_buff, 10, "backup_rev")
 
-
-	char rev_buff[20];
-	snprintf(rev_buff, 20, "_rev%d", rev);
+	char rev_buff[10];
+	snprintf(rev_buff, 10, "_rev%d", rev);
 	
 	char buffer[PATH_MAX+10];
-	strcpy(buffer, filename);
+	strcpy(buffer, outpath);
 	strcat(buffer, rev_buff);
+
+	printf("%s\n", buffer);
+
 	filename = buffer;
 	printf("filename = %s\n", filename);
 	//free(buffer);
@@ -219,6 +233,7 @@ void copy_file(const char* inpath, const char* outpath, bool n)
 	printf("outpath = %s\n", outpath);
 	modnum++;
 	//free(filename);
+
 
 
 	//create a output file, and the file will be in outpath

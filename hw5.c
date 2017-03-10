@@ -165,6 +165,7 @@ void copy_file(const char* inpath,char* outpath, bool n, bool t)
 	char* file;
 	file = strdup(inpath);
 	char* filename = basename(file);
+	printf("filename = %s, file = %s, inpath = %s\n", filename, file, inpath);
 	const size_t data_size = 120;
 	char data[data_size];
 	int outft, inft, fileread = 1;
@@ -178,10 +179,11 @@ void copy_file(const char* inpath,char* outpath, bool n, bool t)
 	//snprintf(rev_buff, 10, "backup_rev")
 		snprintf(rev_buff, 10, "_rev%d", rev);
 		char buffer[PATH_MAX+10];
-		strcpy(buffer, outpath);
+		strcpy(buffer, filename);
 		strcat(buffer, rev_buff);
 		printf("%s\n", buffer);
 		filename = buffer;
+		printf("filename = buffer = %s\n", filename);
 	}
 	else
 	{

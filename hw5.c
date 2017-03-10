@@ -65,8 +65,6 @@ int main(int argc, char* argv[])
 	}
 
 	if (opt_d == true){
-		//d_arg = optarg;
-		//printf("optarg = %s\n", d_arg);
 		if (d_arg == NULL){
 			printf("You entered the -d option but did not enter a path.\n");
 			printf("The default path will be used.\n");
@@ -85,7 +83,6 @@ int main(int argc, char* argv[])
 			{
 				struct stat fd;
 				if(stat(d_arg, &fd) == 0 && S_ISDIR(fd.st_mode))
-				//if(stat(backup_path, &fd) == 0 && S_ISDIR(fd.st_mode))
 				{
 					backupchanged = true;
 					backup_path = d_arg;
@@ -116,20 +113,6 @@ int main(int argc, char* argv[])
  	 puts (buffer);
 
 	printf("Created file with appended time");
-	// 	struct tm* time;
-	// 	char* fd = argv[1];
-	// 	struct stat* buffer;
-	// 	buffer = malloc(sizeof(struct stat));
-	// 	lstat(fd, buffer);
-	// 	struct passwd *pw = getpwuid(buffer->st_uid);
-	// 	if(pw->pw_name != NULL){
-	// 	printf("%s ", pw->pw_name);
-	// }
-	// 	time_t now = time(NULL);
-	// 	time = gmtime(&now);
-
-	// 	printf("Created file with appended time");
-
 
 	}
 
@@ -138,12 +121,10 @@ int main(int argc, char* argv[])
 	int fd = inotify_init();
 	if (backupchanged == false)
 	{
-		//backup_path = "/home/yihong/Desktop";
 		struct passwd *pw = getpwuid(getuid());
 		backup_path = pw->pw_dir;
 		strcat(backup_path, "/Desktop");
 		printf("The default backup folder is %s\n", backup_path);
-		//free(pw);
 	}
 	const char* path = argv[optind];//the location of the input file;
 	//location of the backup file is in backup_path
@@ -205,11 +186,7 @@ void copy_file(const char* inpath,const char* outpath, bool n)
 	int outft, inft, fileread = 1;
 	size_t rev = modnum;
 
-
-	//char* append =  "_rev%d";
-
 	char backup_buff[10];
-	//snprintf(rev_buff, 10, "backup_rev")
 
 	char rev_buff[10];
 	snprintf(rev_buff, 10, "_rev%d", rev);
@@ -222,19 +199,13 @@ void copy_file(const char* inpath,const char* outpath, bool n)
 
 	filename = buffer;
 	printf("filename = %s\n", filename);
-	//free(buffer);
-	//snprintf(
 	snprintf(rev_buff, 20, "/%s", filename);
 	char buffer1[PATH_MAX+10];
 	strcpy(buffer1, outpath);
 	strcat(buffer1, rev_buff);
-	//printf("buffer1 = %s\n", buffer1);
 	outpath = buffer1;
 	printf("outpath = %s\n", outpath);
 	modnum++;
-	//free(filename);
-
-
 
 	//create a output file, and the file will be in outpath
 	outft = (open(outpath, O_CREAT | O_APPEND | O_RDWR,S_IRWXG | S_IRWXU | S_IRWXO));

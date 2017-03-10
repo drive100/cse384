@@ -11,8 +11,10 @@
 #include <utime.h>
 #include <linux/limits.h>
 #include <libgen.h>
+#include <pwd.h>
+#include <string.h>
 
-void copy_file(const char* inpath,const char* outpath, bool n);
+void copy_file(const char* inpath,char* outpath, bool n, bool t);
 
 static size_t modnum = 0;
 
@@ -104,18 +106,15 @@ int main(int argc, char* argv[])
 		//using ISO 8601, no colons or timezone like in lab2
 		//option should default to disabled
 		//makes time structure
- 	 time_t rawtime;
- 	 struct tm * timeinfo;
- 	 char buffer [80];
+ 	 // time_t rawtime;
+ 	 // struct tm * timeinfo;
+ 	 // char buffer [80];
+ 	 // time ( &rawtime );
+ 	 // timeinfo = localtime( &rawtime );
+ 	 // strftime (buffer,80," %Y%m%d%I%M%S.",timeinfo);
+ 	 // puts (buffer);
 
- 	 time ( &rawtime );
- 	 timeinfo = localtime( &rawtime );
-
- 	 strftime (buffer,80," %Y%m%d%I%M%S.",timeinfo);
-
- 	 puts (buffer);
-
-	printf("Created file with appended time");
+	printf("Cpying the original file with appended time\n");
 	// 	struct tm* time;
 	// 	char* fd = argv[1];
 	// 	struct stat* buffer;
@@ -162,7 +161,7 @@ int main(int argc, char* argv[])
 		printf("error: '%s' is unreadable\n", path);
 		return EXIT_SUCCESS;
 	}
-	copy_file(path, backup_path, opt_m);
+	copy_file(path, backup_path, opt_m, opt_t);
 	int wd = inotify_add_watch(fd, path, IN_MODIFY | IN_DELETE_SELF);
 	int x;
 	char buffer[BUF_LEN];
@@ -182,7 +181,7 @@ int main(int argc, char* argv[])
 			{
 				mod++;
 				printf("%d = The file %s is modified\n",mod, path);
-				copy_file(path, backup_path, opt_m);
+				copy_file(path, backup_path, opt_m, opt_t);
 			}
 			if (event->mask & IN_DELETE_SELF)
 			{
@@ -196,35 +195,54 @@ int main(int argc, char* argv[])
 
 }
 
-void copy_file(const char* inpath,const char* outpath, bool n)
+void copy_file(const char* inpath,char* outpath, bool n, bool t)
 {
 	//outpath is directory of output (copy file)
-	const char* filename = basename(inpath);
+	//printf("inpath = ~~~~~~~~~~~   %s\n", inpath);
+	char* file;
+	file = strdup(inpath);
+	char* filename = basename(file);
 	const size_t data_size = 120;
 	char data[data_size];
 	int outft, inft, fileread = 1;
 	size_t rev = modnum;
-
-
+	char rev_buff[100];
+	time_t rawtime;
 	//char* append =  "_rev%d";
-
-	char backup_buff[10];
+	if (t == false)
+	{
+		char backup_buff[10];
 	//snprintf(rev_buff, 10, "backup_rev")
-
-	char rev_buff[10];
-	snprintf(rev_buff, 10, "_rev%d", rev);
-	
-	char buffer[PATH_MAX+10];
-	strcpy(buffer, outpath);
-	strcat(buffer, rev_buff);
-
-	printf("%s\n", buffer);
-
-	filename = buffer;
+		snprintf(rev_buff, 10, "_rev%d", rev);
+		char buffer[PATH_MAX+10];
+		strcpy(buffer, outpath);
+		strcat(buffer, rev_buff);
+		printf("%s\n", buffer);
+		filename = buffer;
+	}
+	else
+	{
+		printf("debugging ~~~~~~~~~~~~~~~dsdf~~2\n");
+		struct tm *timeinfo;
+		printf("debugging ~~~~~~~~~~sdf~~~~~~~2\n");
+		time(&rawtime);
+		printf("debugging ~~~sdf~~~~~~~~~~~~~~2\n");
+		timeinfo = localtime(&rawtime);
+		//time ( &rawti
+		printf("debugging ~~~~~~~~~~~~~~~~~2\n");
+		sprintf(rev_buff,"_%d%d%d%d%d%d",timeinfo->tm_year,timeinfo->tm_mon,
+			timeinfo->tm_mday, timeinfo->tm_hour, timeinfo->tm_min, 
+			timeinfo->tm_sec);
+		printf("debugging ~~~~~~~~~~~~~~~~~3\n");
+		//strftime (rev_buff,100,"%Y%m%d%I%M%S.",timeinfo);
+		puts (rev_buff);
+		strcat(filename, rev_buff);
+		printf("debugging ~~~~~~~~~~~~~~~~~4\n");
+	}
 	printf("filename = %s\n", filename);
 	//free(buffer);
 	//snprintf(
-	snprintf(rev_buff, 20, "/%s", filename);
+	snprintf(rev_buff, 100, "/%s", filename);
 	char buffer1[PATH_MAX+10];
 	strcpy(buffer1, outpath);
 	strcat(buffer1, rev_buff);
@@ -232,6 +250,7 @@ void copy_file(const char* inpath,const char* outpath, bool n)
 	outpath = buffer1;
 	printf("outpath = %s\n", outpath);
 	modnum++;
+	printf("debugging ~~~~~~~~~~~~~~~~~5\n");
 	//free(filename);
 
 
@@ -247,6 +266,7 @@ void copy_file(const char* inpath,const char* outpath, bool n)
 	inft = (open(inpath, O_RDONLY));
 	if(inft == -1)
 	{
+		printf("%s\n", inpath);
 		perror("inpath open");
 		exit(EXIT_FAILURE);
 	}

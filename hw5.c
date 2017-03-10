@@ -54,6 +54,7 @@ int main(int argc, char* argv[])
 		opt = getopt(argc, argv, "hmtd:"); //restated because to reiterated through while loop to make sure there are not more options
 	}
 	if (opt_h == true){
+		//prints helpful information
 		printf("You entered the help option!\n");
 		printf("This program is for backing up files\n");
 		printf("Entering -h will give you this help guide\n");
@@ -67,18 +68,14 @@ int main(int argc, char* argv[])
 	}
 
 	if (opt_d == true){
-		//d_arg = optarg;
-		//printf("optarg = %s\n", d_arg);
+			//need to check whether or not the argument passed to -d is an actual path
+			//if path is not a path, print out saying so and use default path
+			//if path is an actual path, update path variable
 		if (d_arg == NULL){
 			printf("You entered the -d option but did not enter a path.\n");
 			printf("The default path will be used.\n");
-		
-}		else if (d_arg != NULL){
-			//need to check whether or not the argument passed to -d is an actual path
-			//if path is not a path, print out saying so and use default path
-			//if path is an acutal path, update path variable
-			
-
+		}		
+		else if (d_arg != NULL){
 			if (access(d_arg, F_OK) == -1)
 			{
 				printf("error: '%s' does not exist\n", d_arg);
@@ -87,7 +84,6 @@ int main(int argc, char* argv[])
 			{
 				struct stat fd;
 				if(stat(d_arg, &fd) == 0 && S_ISDIR(fd.st_mode))
-				//if(stat(backup_path, &fd) == 0 && S_ISDIR(fd.st_mode))
 				{
 					backupchanged = true;
 					backup_path = d_arg;
@@ -95,40 +91,12 @@ int main(int argc, char* argv[])
 				}
 				else{
 					printf("%s is not a folder\n", d_arg);
-				//use default path;
 				}
 			}
 		}
 	}
-	
 	if (opt_t == true){
-		//APPEND time to file name
-		//using ISO 8601, no colons or timezone like in lab2
-		//option should default to disabled
-		//makes time structure
- 	 // time_t rawtime;
- 	 // struct tm * timeinfo;
- 	 // char buffer [80];
- 	 // time ( &rawtime );
- 	 // timeinfo = localtime( &rawtime );
- 	 // strftime (buffer,80," %Y%m%d%I%M%S.",timeinfo);
- 	 // puts (buffer);
-
 	printf("Cpying the original file with appended time\n");
-	// 	struct tm* time;
-	// 	char* fd = argv[1];
-	// 	struct stat* buffer;
-	// 	buffer = malloc(sizeof(struct stat));
-	// 	lstat(fd, buffer);
-	// 	struct passwd *pw = getpwuid(buffer->st_uid);
-	// 	if(pw->pw_name != NULL){
-	// 	printf("%s ", pw->pw_name);
-	// }
-	// 	time_t now = time(NULL);
-	// 	time = gmtime(&now);
-
-	// 	printf("Created file with appended time");
-
 
 	}
 
@@ -137,15 +105,12 @@ int main(int argc, char* argv[])
 	int fd = inotify_init();
 	if (backupchanged == false)
 	{
-		//backup_path = "/home/yihong/Desktop";
 		struct passwd *pw = getpwuid(getuid());
 		backup_path = pw->pw_dir;
 		strcat(backup_path, "/Desktop");
 		printf("The default backup folder is %s\n", backup_path);
-		//free(pw);
 	}
-	const char* path = argv[optind];//the location of the input file;
-	//location of the backup file is in backup_path
+	const char* path = argv[optind]; //location of the input file;
 	if (path == NULL)
 	{
 		printf("You did not give in a file\n");
@@ -188,11 +153,9 @@ int main(int argc, char* argv[])
 				printf("The file %s is deleted\n", path);
 				return EXIT_SUCCESS;
 			}
-
 			p += sizeof(struct inotify_event) + event->len;
 		}
 	}
-
 }
 
 void copy_file(const char* inpath,char* outpath, bool n, bool t)
@@ -246,15 +209,11 @@ void copy_file(const char* inpath,char* outpath, bool n, bool t)
 	char buffer1[PATH_MAX+10];
 	strcpy(buffer1, outpath);
 	strcat(buffer1, rev_buff);
-	//printf("buffer1 = %s\n", buffer1);
 	outpath = buffer1;
 	printf("outpath = %s\n", outpath);
 	modnum++;
 	printf("debugging ~~~~~~~~~~~~~~~~~5\n");
 	//free(filename);
-
-
-
 	//create a output file, and the file will be in outpath
 	outft = (open(outpath, O_CREAT | O_APPEND | O_RDWR,S_IRWXG | S_IRWXU | S_IRWXO));
 	if(outft == -1)
@@ -282,7 +241,6 @@ void copy_file(const char* inpath,char* outpath, bool n, bool t)
 			perror("write");
 			exit(EXIT_FAILURE);
 		}
-		
 	}
 	close(inft);
 	close(outft);
@@ -310,6 +268,7 @@ void copy_file(const char* inpath,char* outpath, bool n, bool t)
 			perror("chown");
 			exit(EXIT_FAILURE);
 		}
+
 		//source: stackoverflow.com/questions/2185338/how-to-set-the-modification-time-of-a-file-programmatically
 		struct utimbuf new_times;
 		new_times.modtime = buf->st_mtime;

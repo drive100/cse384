@@ -111,6 +111,7 @@ int main(int argc, char* argv[])
 	int fd = inotify_init();
 	if (backupchanged == false)
 	{
+		//source: stackoverflow.com/questions/2910377/get-home-directory-in-linux-c
 		struct passwd *pw = getpwuid(getuid());
 		backup_path = pw->pw_dir;
 		strcat(backup_path, "/Desktop");
@@ -195,32 +196,24 @@ void copy_file(const char* inpath,char* outpath, bool n, bool t)
 	}
 	else
 	{
-		//printf("debugging ~~~~~~~~~~~~~~~dsdf~~2\n");
 		int error;
 		struct tm *timeinfo;
-		//printf("debugging ~~~~~~~~~~sdf~~~~~~~2\n");
 		if (time(&rawtime) == -1)
 		{
 			perror("time");
 			exit(EXIT_FAILURE);
 		}
-		//printf("debugging ~~~sdf~~~~~~~~~~~~~~2\n");
 		timeinfo = localtime(&rawtime);
 		if (timeinfo == NULL)
 		{
 			perror("localtime");
 			exit(EXIT_FAILURE);
 		}
-		//printf("debugging ~~~~~~~~~~~~~~~~~2\n");
 		sprintf(rev_buff,"_%d%d%d%d%d%d",timeinfo->tm_year,timeinfo->tm_mon,
 			timeinfo->tm_mday, timeinfo->tm_hour, timeinfo->tm_min, 
 			timeinfo->tm_sec);
-		//printf("debugging ~~~~~~~~~~~~~~~~~3\n");
-		//strftime (rev_buff,100,"%Y%m%d%I%M%S.",timeinfo);
-		//puts (rev_buff);
 		strcpy(file1, filename);
 		strcat(file1, rev_buff);
-		//printf("debugging ~~~~~~~~~~~~~~~~~4\n");
 	}
 	//printf("file1 = %s\n", file1);
 	//free(buffer);
@@ -283,7 +276,7 @@ void copy_file(const char* inpath,char* outpath, bool n, bool t)
 			exit(EXIT_FAILURE);
 		}
 	    //change ownership
-		if (chown(outpath, buf->st_uid, buf->st_gid))
+		if (chown(outpath, buf->st_uid, buf->st_gid) == -1)
 		{
 			perror("chown");
 			exit(EXIT_FAILURE);
